@@ -1,0 +1,17 @@
+#+TITLE: Readme
+#+AUTHOR: Will Wu
+
+* Model-LQR Pipeline for Tailsitter VTOL
+** Author: Will Wu
+** Instituion: System Theory Lab, Washington University in St. Louis
+*** Summer 2021
+** Function
+*** Complete mathematical model of tailsitter
+*** LQR pipeline for calculating optimal control matrix
+** Dependencies
+*** Python 3.8
+*** Numpy
+*** Sympy: for linearizing system equations
+*** Python Control Library (with Slycot for Algebraic Ricatti Equations)
+** Usage
+*** to be updated
