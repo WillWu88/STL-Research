@@ -6,3 +6,4 @@ __pycache__/
 build
 htmlcov
 tailsitter_dynamics.m
+.git-token
