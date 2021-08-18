@@ -5,6 +5,7 @@
 # be possible
 
 import numpy as np
+import control as ct
 
 # import tailsitter constants: dynamics, aero coeffs
 # contains sympy
@@ -37,12 +38,19 @@ class Tailsitter:
         self.c_roll_flap
         self.wing_span
 
-        # state variables - x: 13x1 vector
+        # state variables - x: 12x1 vector
         # elements: [x, y, z, u, v, w, q1, q2, q3, p, q, r]
-        self.state = sym.zeros(13,1)
+        # ignoring q0, since rotation is 3DOF
+        self.state = sym.zeros(12,1)
         # control variables - u: 4x1 vector
         # elements: [prop_v_l, prop_v_r, flap_deg_l, flap_deg_r]'
         self.control = sym.zeros(4,1)
+
+        # LQR controller terms
+        # Initialize as identity matrices
+        # initialize q as 12x12 matrix, since rotation is 3DOF. Ignoring q0
+        self.Q = eye(12)
+        self.R = eye(4)
 
     def CalcThrust(self, prop_v):
         # helper function for aero calculation
@@ -212,3 +220,8 @@ class Tailsitter:
         # Linearize system via system jacobian
         # Return system B matrix
         return self.FullState(x, v, q, omega, u).jacobian(u)
+
+    def GetGainMatrix(self, A, B):
+        # Calculate K matrix for LQR controller given system constants
+        K = ct.lqr(A, B, self.Q, self.R)
+        return K[0]

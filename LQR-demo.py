@@ -16,8 +16,10 @@ D = sym.zeros(2,1)
 Q = C.transpose() * C
 R = 1
 
-K, S, E = ct.lqr(A, B, Q, R)
+K = ct.lqr(A, B, Q, R)
 # outputs are all numpy matrices
 # results checks out
 
-print(K)
+print("K: " + str(K[0]))
+# print("S: " + str(S))
+# print("E: " + str(E))
