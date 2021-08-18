@@ -13,3 +13,5 @@ A_Matrix = Plant.jacobian(State)
 Specified_A = A_Matrix.subs({v:1, x:1})
 
 print(sym.latex(Specified_A))
+print(Specified_A.shape)
+print(Specified_A[1,1])

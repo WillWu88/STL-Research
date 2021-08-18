@@ -177,6 +177,10 @@ class Tailsitter:
                                   [-omega[0], 0, omega[2], -omega[1]],
                                   [-omega[1], -omega[2], 0, omega[0]],
                                   [-omega[2], omega[1], -omega[0], 0]]) * q)
+    def QDotR3(self, omega, q):
+        # Alternative dynamics state space equation: q-dot
+        # q only has three entries: q1, q2, and q3
+        return 0.5 * (sym.sqrt(1 - q.transpose * q) * omega - omega.cross(q))
 
     def OmegaDot(self, omega, u):
         # Dynamics state space equation: omega-dot
@@ -189,7 +193,22 @@ class Tailsitter:
                                 [self.CalcAeroPitch(u[0], u[1], u[2], u[3])],
                                 [self.CalcThrustYaw(u[0], u[1])])))
 
-    def Linearize(self, x, v, q, omega, u):
-        # Linearize system dynamics by calculating system jacobian
-        # accepts only symbols
-        return
+    def FullState(self, x, v, q, omega, u):
+        # return full system dynamics
+        return sym.Matrix([[self.VDot(omega, v, q, u)],
+                           [self.PDot(v, q)],
+                           [self.QDotR3(omega, q)],
+                           [self.OmegaDot(omega, u)]])
+
+    def LinearizeA(self, x, v, q, omega, u):
+        # Linearize system via system jacobian
+        # Return system A matrix
+        system = self.FullState(x, v, q, omega, u)
+        state = sym.Matrix([[x],[v],[q],[omega]])
+
+        return system.jacobian(state)
+
+    def LinearizeB(self, x, v, q, omega, u):
+        # Linearize system via system jacobian
+        # Return system B matrix
+        return self.FullState(x, v, q, omega, u).jacobian(u)
