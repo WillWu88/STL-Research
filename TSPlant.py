@@ -6,37 +6,41 @@
 
 import numpy as np
 import control as ct
-
-# import tailsitter constants: dynamics, aero coeffs
-# contains sympy
-import TSConstants as tsc
+import matplotlib as mat
+import sympy as sym
+from sympy import eye
 
 class Tailsitter:
     # class for tailsitter model
-    def __init__(self, **params):
+    def __init__(self, *initial_data, **kwargs):
+        for dictionary in initial_data:
+            for key in dictionary:
+                setattr(self, key, dictionary[key])
+        for key in kwargs:
+            setattr(self, key, kwargs[key])
         # vehicle coefficients
         self.g = 9.8
-        self.mass
-        self.wing_area
-        self.j_xx
-        self.j_yy
-        self.j_zz
-        self.j_cross_xz
-        self.j_mat
-        self.c_bar
-        self.prop_d
-        self.prop_arm
-        self.y_mac
-        self.rho = 1.225
-        self.c_lift
-        self.c_lift_flap
-        self.c_drag_flap
-        self.c_moment
-        self.c_moment_flap
-        self.c_thrust
-        self.c_power
-        self.c_roll_flap
-        self.wing_span
+        # self.mass
+        # self.wing_area
+        # self.j_xx
+        # self.j_yy
+        # self.j_zz
+        # self.j_cross_xz
+        # self.j_mat
+        # self.c_bar
+        # self.prop_d
+        # self.prop_arm
+        # self.y_mac
+        # self.rho = 1.225
+        # self.c_lift
+        # self.c_lift_flap
+        # self.c_drag_flap
+        # self.c_moment
+        # self.c_moment_flap
+        # self.c_thrust
+        # self.c_power
+        # self.c_roll_flap
+        # self.wing_span
 
         # state variables - x: 12x1 vector
         # elements: [x, y, z, u, v, w, q1, q2, q3, p, q, r]
@@ -51,6 +55,11 @@ class Tailsitter:
         # initialize q as 12x12 matrix, since rotation is 3DOF. Ignoring q0
         self.Q = eye(12)
         self.R = eye(4)
+
+    def ExamineMembers(self):
+        # debug function
+        print (self.__dict__)
+
 
     def CalcThrust(self, prop_v):
         # helper function for aero calculation
@@ -83,7 +92,7 @@ class Tailsitter:
         # only calculating oneside, assuming there can be different prop speed
         # on both sides
         effect_constant = self.CalcEffCons(prop_v)
-        return effect_constant * self.c_drag_flap * np.abs(self.flap_deg)
+        return effect_constant * self.c_drag_flap * np.abs(flap_deg)
 
     def CalcRamDrag(self, v):
         # helper function for aero calculation
@@ -137,10 +146,21 @@ class Tailsitter:
                        * (self.c_moment + self.c_moment_flap * flap_deg_r))
         return pitch_left - pitch_right
 
+    def QCorrect(self, q):
+        if (len(q)==3):
+            return sym.Matrix([
+                sym.sqrt(1-q[0]**2-q[1]**2-q[2]**2),
+                q[0],
+                q[1],
+                q[2]])
+        else:
+            return q
+
     def RotationMatrix(self, q):
         # helper function for plant model
         # generates an earth to body rotation matrix based on current quaternion
         # check this equation
+        q = self.QCorrect(q)
         return sym.Matrix([
             [q[0]**2 + q[1]**2 - q[2]**2 -q[3]**2, 2*(q[1]*q[2]+q[0]*q[3]),
              2*(q[1]*q[3]-q[0]*q[2])], # first row
@@ -163,12 +183,12 @@ class Tailsitter:
 
         # circular acceleration and gravity
         acc_grav = (-omega.cross(v)
-                    + self.RotationMatrix(q) * sym.Matrix([[0], [0], [g]]))
+                    + self.RotationMatrix(q) * sym.Matrix([[0], [0], [self.g]]))
         thrust_matrix = sym.Matrix([[self.CalcThrust(u[0])
                                      + self.CalcThrust(u[1])], [0], [0]])
         drag_lift_matrix = (self.CalcRamDrag(v)
-                            + sym.Matrix([[-(self.CalcDrag(u[0], u[2])
-                                           + self.CalcDrag(u[1], u[3]))],
+                            + sym.Matrix([[-(self.CalcFlapDrag(u[0], u[2])
+                                           + self.CalcFlapDrag(u[1], u[3]))],
                                           [0],
                                           [-(self.CalcLift(u[0], u[2])
                                            + self.CalcLift(u[1], u[3]))]]))
@@ -225,3 +245,8 @@ class Tailsitter:
         # Calculate K matrix for LQR controller given system constants
         K = ct.lqr(A, B, self.Q, self.R)
         return K[0]
+
+    def Export(self, option):
+        # Export K matrix
+        # Options: latex, txt file, c++ code
+        pass
