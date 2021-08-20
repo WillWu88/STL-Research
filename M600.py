@@ -15,6 +15,7 @@ Q = sym.Matrix([q1, q2, q3])
 Omega = sym.Matrix([p, q, r])
 U = sym.Matrix([vl, vr, fl, fr])
 
-FS_eqn = m600.FullState(X, V, Q, Omega, U)
-# A_matrix = m600.LinearizeA()
-# K_mat = m600.GetGainMatrix(m600.LinearizeA, m600.LinearizeB)
+# FS_eqn = m600.FullState(X, V, Q, Omega, U)
+A_matrix, B_matrix = m600.Linearize(X, V, Q, Omega, U)
+
+K_mat = m600.GetGainMatrix(A_matrix, B_matrix)

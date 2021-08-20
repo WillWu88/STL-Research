@@ -208,18 +208,27 @@ class Tailsitter:
     def QDotR3(self, omega, q):
         # Alternative dynamics state space equation: q-dot
         # q only has three entries: q1, q2, and q3
-        return 0.5 * (sym.sqrt(1 - q.transpose * q) * omega - omega.cross(q))
+        return 0.5 * (sym.sqrt(1 - q.dot(q)) * omega - omega.cross(q))
 
     def OmegaDot(self, omega, u):
         # Dynamics state space equation: omega-dot
         # takes angular rate and control; calculates moment differential
         # omega (3x1): angular rate; u(4x1): control
-        return (self.j_mat.inv()
+        try:
+            return (self.j_mat.inv()
                 * (-omega.cross(self.j_mat * omega)
-                   + sym.Matrix([self.CalcAeroRoll(u[0]. u[1]. u[2]. u[3])
-                                 + self.CalcPropRoll(u[0], u[1])],
+                    + sym.Matrix([self.CalcAeroRoll(u[0], u[1], u[2], u[3])
+                                    + self.CalcPropRoll(u[0], u[1])],
                                 [self.CalcAeroPitch(u[0], u[1], u[2], u[3])],
                                 [self.CalcThrustYaw(u[0], u[1])])))
+        except AttributeError:
+            self.j_mat = self.j_mat[0]
+            return (self.j_mat.inv()
+                * (-omega.cross(self.j_mat * omega)
+                   + sym.Matrix([self.CalcAeroRoll(u[0], u[1], u[2], u[3])
+                                 + self.CalcPropRoll(u[0], u[1]),
+                                self.CalcAeroPitch(u[0], u[1], u[2], u[3]),
+                                  self.CalcThrustYaw(u[0], u[1])])))
 
     def FullState(self, x, v, q, omega, u):
         # return full system dynamics
@@ -228,18 +237,13 @@ class Tailsitter:
                            [self.QDotR3(omega, q)],
                            [self.OmegaDot(omega, u)]])
 
-    def LinearizeA(self, x, v, q, omega, u):
+    def Linearize(self, x, v, q, omega, u):
         # Linearize system via system jacobian
-        # Return system A matrix
+        # Return system A, B matrices
         system = self.FullState(x, v, q, omega, u)
         state = sym.Matrix([[x],[v],[q],[omega]])
 
-        return system.jacobian(state)
-
-    def LinearizeB(self, x, v, q, omega, u):
-        # Linearize system via system jacobian
-        # Return system B matrix
-        return self.FullState(x, v, q, omega, u).jacobian(u)
+        return system.jacobian(state), system.jacobian(u)
 
     def GetGainMatrix(self, A, B):
         # Calculate K matrix for LQR controller given system constants

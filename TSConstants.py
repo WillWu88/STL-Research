@@ -10,7 +10,8 @@ position_ned = sym.Matrix([0, 0, 0])
 
 # constants
 m600_param = dict(
-    mass=0.3,  # [kg]
+    # mass=0.3,  # [kg]
+    mass = 1,
     wing_area=0.0828,  # [m^2]
     c_bar=0.142,  # mean aerodynamic chord [m]
     prop_d=0.12,  # propeller diameter [m]
