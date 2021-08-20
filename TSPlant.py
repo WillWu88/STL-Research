@@ -9,6 +9,7 @@ import control as ct
 import matplotlib as mat
 import sympy as sym
 from sympy import eye
+import scipy as sp
 
 class Tailsitter:
     # class for tailsitter model
@@ -230,27 +231,49 @@ class Tailsitter:
                                 self.CalcAeroPitch(u[0], u[1], u[2], u[3]),
                                   self.CalcThrustYaw(u[0], u[1])])))
 
-    def FullState(self, x, v, q, omega, u):
+    def FullState(self, v, q, omega, u):
         # return full system dynamics
-        return sym.Matrix([[self.VDot(omega, v, q, u)],
-                           [self.PDot(v, q)],
+        return sym.Matrix([[self.PDot(v, q)],
+                           [self.VDot(omega, v, q, u)],
                            [self.QDotR3(omega, q)],
                            [self.OmegaDot(omega, u)]])
 
     def Linearize(self, x, v, q, omega, u):
         # Linearize system via system jacobian
         # Return system A, B matrices
-        system = self.FullState(x, v, q, omega, u)
+        system = self.FullState(v, q, omega, u)
         state = sym.Matrix([[x],[v],[q],[omega]])
 
         return system.jacobian(state), system.jacobian(u)
+
+    def FSolve(self, state, A, B):
+        return sym.Matrix([[0],[0],[-2],
+                           sym.zeros(9,1)]), sym.Matrix([[340.3804],
+                                                         [340.3804],[0],[0]])
+
+    def NaN20(self, Matrix):
+        for i in range(0,len(Matrix)):
+            if Matrix[i] == sym.nan:
+                Matrix[i] = 0
+        return Matrix
+
+    def Localize(self, state, A, B, X_Eq, U_Eq):
+        combined_eq = sym.Matrix([X_Eq, U_Eq])
+        for i in range(0, len(state)):
+            A = A.subs(state[i], combined_eq[i])
+            B = B.subs(state[i], combined_eq[i])
+
+        return self.NaN20(A), B
 
     def GetGainMatrix(self, A, B):
         # Calculate K matrix for LQR controller given system constants
         K = ct.lqr(A, B, self.Q, self.R)
         return K[0]
 
-    def Export(self, option):
+    def SetEQ(self):
+        return sym.Matrix([])
+
+    def Export(self, mat, option):
         # Export K matrix
         # Options: latex, txt file, c++ code
         pass

@@ -36,7 +36,12 @@ m600_param = dict(
     c_thrust=0.05,  # thrust coefficient
     c_power=0.01,  # power coefficient
     c_roll_flap=0.0057,  # roll coefficient per flap deflection [1/deg]
-    wing_span=0.6  # wing span [m]
+    wing_span=0.6,  # wing span [m]
+
+    # eq points
+    x_eq=sym.Matrix([0,0,-2]),
+    v_eq = sym.Matrix([0,0,0]),
+
 )
 
 m600_param['j_mat'] = sym.Matrix(

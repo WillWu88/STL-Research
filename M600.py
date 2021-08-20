@@ -16,6 +16,14 @@ Omega = sym.Matrix([p, q, r])
 U = sym.Matrix([vl, vr, fl, fr])
 
 # FS_eqn = m600.FullState(X, V, Q, Omega, U)
+states = sym.Matrix([X,V,Q,Omega,U])
 A_matrix, B_matrix = m600.Linearize(X, V, Q, Omega, U)
+X_Eq, U_Eq = m600.FSolve(sym.Matrix([[X], [V], [Q], [Omega], [U]]),
+                         A_matrix, B_matrix)
 
-K_mat = m600.GetGainMatrix(A_matrix, B_matrix)
+local_A, local_B = m600.Localize(states, A_matrix, B_matrix, X_Eq, U_Eq)
+print(local_B)
+# local_A = sym.lambdify(local_A, states, modules='numpy')
+# local_B = sym.lambdify(local_B, modules='numpy')
+
+# K_mat = m600.GetGainMatrix(A_matrix, B_matrix)
