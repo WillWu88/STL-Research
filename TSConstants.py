@@ -10,8 +10,7 @@ position_ned = sym.Matrix([0, 0, 0])
 
 # constants
 m600_param = dict(
-    # mass=0.3,  # [kg]
-    mass = 1,
+    mass=0.3,  # [kg]
     wing_area=0.0828,  # [m^2]
     c_bar=0.142,  # mean aerodynamic chord [m]
     prop_d=0.12,  # propeller diameter [m]
@@ -30,8 +29,8 @@ m600_param = dict(
     c_lift=0,  # alternative value
     c_lift_flap=0.036,  # lift coefficient per flap deflection [1/deg]
     c_drag_flap=0.000762,
-    c_moment=-0.065,  # moment coefficient at 0 AoA
-    # c_moment = 0, # alternative value
+    # c_moment=-0.065,  # moment coefficient at 0 AoA
+    c_moment = 0, # alternative value
     c_moment_flap=-0.0102,  # moment coefficient per flap deflection [1/deg]
     c_thrust=0.05,  # thrust coefficient
     c_power=0.01,  # power coefficient
@@ -39,7 +38,7 @@ m600_param = dict(
     wing_span=0.6,  # wing span [m]
 
     # eq points
-    x_eq=sym.Matrix([0,0,-2]),
+    x_eq = sym.Matrix([0,0,-2]),
     v_eq = sym.Matrix([0,0,0]),
 
 )
