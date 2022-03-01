@@ -28,10 +28,10 @@ X_Eq, U_Eq = m600.FSolve(sym.Matrix([[X], [V], [Q], [Omega], [Control]]),
 
 # print(m600.VDot(Omega, V, Q, U))
 local_A, local_B = m600.Localize(states, A_matrix, B_matrix, X_Eq, U_Eq)
-print("\nA:\n");print(local_A)
-print("\nB:\n");print(local_B)
-print("\nQ:\n");print(m600.Q)
-print("\nR:\n");print(m600.R)
+# print("\nA:\n");print(local_A)
+# print("\nB:\n");print(local_B)
+# print("\nQ:\n");print(m600.Q)
+# print("\nR:\n");print(m600.R)
 
 K_mat = m600.GetGainMatrix(local_A, local_B)
 print(K_mat)

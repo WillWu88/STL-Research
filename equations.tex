@@ -1,0 +1,67 @@
+% Latex Template, Copyright William Wu 2020
+% Inspired by CSE Electronic Homework Template, by Jeremy Buhler
+
+\documentclass[11pt]{article}
+\usepackage[left=0.7in,right=0.7in,top=1in,bottom=0.7in]{geometry}
+\usepackage{fancyhdr} % for header
+\usepackage{graphicx} % for figures
+\usepackage{amsmath}  % for extended math markup
+\usepackage{amssymb}
+\usepackage[bookmarks=false]{hyperref} % for URL embedding
+\usepackage[noend]{algpseudocode} % for pseudocode
+\usepackage[plain]{algorithm} % float environment for algorithms
+\usepackage{listings}
+\usepackage{color}
+\usepackage{comment}
+\usepackage{indentfirst}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{siunitx}
+
+\setlist[description]{leftmargin=\parindent,labelindent=\parindent}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\newcommand{\StudentName}{Will Wu}
+\newcommand{\Subject}{}
+\newcommand{\DocTitle}{}
+\newcommand{\StudentID}{}
+
+% create header and footer for every page
+\pagestyle{fancy}
+\fancyhf{}
+\lhead{\textbf{\StudentName}}
+\chead{\textbf{\StudentID}}
+\rhead{\textbf{\Subject}}
+\cfoot{\thepage}
+\setlength{\headheight}{14pt}
+
+% preferred pseudocode style
+\algrenewcommand{\algorithmicprocedure}{}
+\algrenewcommand{\algorithmicthen}{}
+
+% do { ... } while (cond)''
+\algdef{SE}[DOWHILE]{Do}{doWhile}{\algorithmicdo}[1]{\algorithmicwhile\ #1}%
+
+% for (x in y ... z)''
+\newcommand{\ForRange}[3]{\For{#1 \textbf{in} #2 \ \ldots \ #3}}
+
+% these are common math formatting commands that aren't defined by default
+\newcommand{\union}{\cup}
+\newcommand{\isect}{\cap}
+\newcommand{\ceil}[1]{\ensuremath \left\lceil #1 \right\rceil}
+\newcommand{\floor}[1]{\ensuremath \left\lfloor #1 \right\rfloor}
+
+\onehalfspacing
+
+\begin{document}
+$$\dot{X}_{ned} = \frac{d}{dt} \begin{bmatrix} x \\ y \\ z \end{bmatrix} = (T_{E\xrightarrow{}B})^TV$$\\
+
+$$\dot{V}_{body} = \frac{d}{dt} \begin{bmatrix} u \\ v \\ w  \end{bmatrix} = -\omega \times V + T_{E\xrightarrow{}B}\begin{bmatrix} 0 \\ 0 \\ g \end{bmatrix} + \frac{1}{m} \begin{bmatrix} T - D\cos(\alpha) + L\sin(\alpha) \\ 0 \\ -L\cos(\alpha) - D\sin(\alpha)  \end{bmatrix} $$\\
+
+$$\dot{\omega} = J^{-1}[-\omega \times J\omega + \begin{bmatrix}L_A + L_P \\M_A \\N_P \end{bmatrix}]$$\\
+
+$$\boldsymbol{\dot{q}} = \frac{d}{dt} \begin{bmatrix} q_1 \\ q_2 \\ q_3 \end{bmatrix} = \frac{1}{2}q_{0}\omega - \frac{1}{2}\omega \times \boldsymbol{q}$$\\
+$$q_0 = \sqrt{1-q_1^2 - q_2^2 - q_3^2}$$
+\end{document}
