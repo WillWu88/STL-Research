@@ -48,6 +48,10 @@ R = eye(length(u));
 
 [lqr_K, S, e] = lqr(sys, Q, R, zeros(length(x),length(u)));
 
+lqr_yaw_gain = lqr_K(:,12);
+lqr_pitch_gain = lqr_K(:,11);
+lqr_roll_gain = lqr_K(:,10);
+
 %% Set Points
 hover_height = 5; %meters
 set_points = [1 0 hover_height 0 0 0 0 0 0 0 0 0]';
