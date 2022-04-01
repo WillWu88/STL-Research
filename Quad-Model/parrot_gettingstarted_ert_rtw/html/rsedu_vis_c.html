@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script type="text/javascript" src="./js/coder_app.js"></script>
+<meta http-equiv="content-type" content="text/html; charset=utf-8" />
+<script type="text/javascript" src="./rtwreport_utils.js"></script>
+<script type="text/javascript" src="./rtwannotate.js"></script>
+<link rel="stylesheet" type="text/css" href="./css/coder_app.css"/>
+</head>
+<body onload="srcFileOnload();">
+<pre id="code">
+<table class="code" id="codeTbl">
+<tr name="1" id="1">
+<td><a id="l1" class='ln'>1</a></td><td><span class="ct">//File: rsedu_vis.c</span></td></tr>
+<tr name="2" id="2">
+<td><a id="l2" class='ln'>2</a></td><td></td></tr>
+<tr name="3" id="3">
+<td><a id="l3" class='ln'>3</a></td><td><span class="pp">#include "rsedu_vis.h"</span></td></tr>
+<tr name="4" id="4">
+<td><a id="l4" class='ln'>4</a></td><td><span class="pp">#include &lt;stdbool.h&gt;</span></td></tr>
+<tr name="5" id="5">
+<td><a id="l5" class='ln'>5</a></td><td></td></tr>
+<tr name="6" id="6">
+<td><a id="l6" class='ln'>6</a></td><td><span class="pp">#include &lt;sys/socket.h&gt;</span></td></tr>
+<tr name="7" id="7">
+<td><a id="l7" class='ln'>7</a></td><td><span class="pp">#include &lt;sys/types.h&gt;</span></td></tr>
+<tr name="8" id="8">
+<td><a id="l8" class='ln'>8</a></td><td><span class="pp">#include &lt;sys/fcntl.h&gt;</span></td></tr>
+<tr name="9" id="9">
+<td><a id="l9" class='ln'>9</a></td><td><span class="pp">#include &lt;netinet/in.h&gt;</span></td></tr>
+<tr name="10" id="10">
+<td><a id="l10" class='ln'>10</a></td><td><span class="pp">#include &lt;netdb.h&gt;</span></td></tr>
+<tr name="11" id="11">
+<td><a id="l11" class='ln'>11</a></td><td><span class="pp">#include &lt;stdio.h&gt;</span></td></tr>
+<tr name="12" id="12">
+<td><a id="l12" class='ln'>12</a></td><td><span class="pp">#include &lt;poll.h&gt;</span></td></tr>
+<tr name="13" id="13">
+<td><a id="l13" class='ln'>13</a></td><td><span class="pp">#include &lt;string.h&gt;</span></td></tr>
+<tr name="14" id="14">
+<td><a id="l14" class='ln'>14</a></td><td><span class="pp">#include &lt;stdlib.h&gt;</span></td></tr>
+<tr name="15" id="15">
+<td><a id="l15" class='ln'>15</a></td><td><span class="pp">#include &lt;unistd.h&gt;</span></td></tr>
+<tr name="16" id="16">
+<td><a id="l16" class='ln'>16</a></td><td><span class="pp">#include &lt;errno.h&gt;</span></td></tr>
+<tr name="17" id="17">
+<td><a id="l17" class='ln'>17</a></td><td><span class="pp">#include &lt;arpa/inet.h&gt;</span></td></tr>
+<tr name="18" id="18">
+<td><a id="l18" class='ln'>18</a></td><td><span class="pp">#include &lt;sys/time.h&gt;</span></td></tr>
+<tr name="19" id="19">
+<td><a id="l19" class='ln'>19</a></td><td><span class="pp">#include &lt;sys/stat.h&gt;</span></td></tr>
+<tr name="20" id="20">
+<td><a id="l20" class='ln'>20</a></td><td><span class="pp">#include &lt;fcntl.h&gt;</span></td></tr>
+<tr name="21" id="21">
+<td><a id="l21" class='ln'>21</a></td><td><span class="pp">#include &lt;limits.h&gt;</span></td></tr>
+<tr name="22" id="22">
+<td><a id="l22" class='ln'>22</a></td><td><span class="pp">#include "rsedu_control.h"</span></td></tr>
+<tr name="23" id="23">
+<td><a id="l23" class='ln'>23</a></td><td><span class="pp">#include &lt;pthread.h&gt;</span></td></tr>
+<tr name="24" id="24">
+<td><a id="l24" class='ln'>24</a></td><td><span class="pp">#include &lt;semaphore.h&gt;</span></td></tr>
+<tr name="25" id="25">
+<td><a id="l25" class='ln'>25</a></td><td><span class="pp">#include "MW_target_hardware_resources.h"</span></td></tr>
+<tr name="26" id="26">
+<td><a id="l26" class='ln'>26</a></td><td></td></tr>
+<tr name="27" id="27">
+<td><a id="l27" class='ln'>27</a></td><td><span class="pp">#ifdef</span> <a id="27c8" class="tk">MW_HAS_IMAGE_PROCESSING</a></td></tr>
+<tr name="28" id="28">
+<td><a id="l28" class='ln'>28</a></td><td><span class="pp">#include "ptimer.h"</span></td></tr>
+<tr name="29" id="29">
+<td><a id="l29" class='ln'>29</a></td><td><span class="pp">#include &lt;string.h&gt;</span></td></tr>
+<tr name="30" id="30">
+<td><a id="l30" class='ln'>30</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="31" id="31">
+<td><a id="l31" class='ln'>31</a></td><td></td></tr>
+<tr name="32" id="32">
+<td><a id="l32" class='ln'>32</a></td><td><span class="kw">extern</span> <span class="kw">int</span> <a id="32c12" class="tk">capture</a>;</td></tr>
+<tr name="33" id="33">
+<td><a id="l33" class='ln'>33</a></td><td><span class="kw">extern</span> <span class="kw">int</span> <a id="33c12" class="tk">connfd</a>;</td></tr>
+<tr name="34" id="34">
+<td><a id="l34" class='ln'>34</a></td><td></td></tr>
+<tr name="35" id="35">
+<td><a id="l35" class='ln'>35</a></td><td><span class="ct">//----------------------------------</span></td></tr>
+<tr name="36" id="36">
+<td><a id="l36" class='ln'>36</a></td><td><span class="ct">// Image processing / Vision-based pose estimation</span></td></tr>
+<tr name="37" id="37">
+<td><a id="l37" class='ln'>37</a></td><td><span class="ct">//----------------------------------</span></td></tr>
+<tr name="38" id="38">
+<td><a id="l38" class='ln'>38</a></td><td></td></tr>
+<tr name="39" id="39">
+<td><a id="l39" class='ln'>39</a></td><td><span class="ct">/*</span></td></tr>
+<tr name="40" id="40">
+<td><a id="l40" class='ln'>40</a></td><td><span class="ct"> * @input buffer Pointer to the current picture seen by the vertical camera</span></td></tr>
+<tr name="41" id="41">
+<td><a id="l41" class='ln'>41</a></td><td><span class="ct"> * Picture is 160x120(width x height) pixels in YUYV format, ie 80x120 elements</span></td></tr>
+<tr name="42" id="42">
+<td><a id="l42" class='ln'>42</a></td><td><span class="ct"> * of type 'pixel2_t'</span></td></tr>
+<tr name="43" id="43">
+<td><a id="l43" class='ln'>43</a></td><td><span class="ct"> *</span></td></tr>
+<tr name="44" id="44">
+<td><a id="l44" class='ln'>44</a></td><td><span class="ct"> * Called 60 times per second.</span></td></tr>
+<tr name="45" id="45">
+<td><a id="l45" class='ln'>45</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="46" id="46">
+<td><a id="l46" class='ln'>46</a></td><td></td></tr>
+<tr name="47" id="47">
+<td><a id="l47" class='ln'>47</a></td><td><span class="pp">#ifdef</span> <a id="47c8" class="tk">MW_HAS_IMAGE_PROCESSING</a></td></tr>
+<tr name="48" id="48">
+<td><a id="l48" class='ln'>48</a></td><td><span class="kw">extern</span> <span class="kw">int</span> <a id="48c12" class="tk">runVisionCode</a>;</td></tr>
+<tr name="49" id="49">
+<td><a id="l49" class='ln'>49</a></td><td><span class="ct">/* This is flag to start the Vision code once the</span></td></tr>
+<tr name="50" id="50">
+<td><a id="l50" class='ln'>50</a></td><td><span class="ct"> * Control code has started. This variable is</span></td></tr>
+<tr name="51" id="51">
+<td><a id="l51" class='ln'>51</a></td><td><span class="ct"> * updated in the Control Thread once the "Start"</span></td></tr>
+<tr name="52" id="52">
+<td><a id="l52" class='ln'>52</a></td><td><span class="ct"> * button is clicked on the Flight Control UI. */</span></td></tr>
+<tr name="53" id="53">
+<td><a id="l53" class='ln'>53</a></td><td></td></tr>
+<tr name="54" id="54">
+<td><a id="l54" class='ln'>54</a></td><td><a id="54c1" class="tk">uint8_T</a> <a id="54c9" class="tk">*</a><a id="54c10" class="tk">imRGB</a>;</td></tr>
+<tr name="55" id="55">
+<td><a id="l55" class='ln'>55</a></td><td><span class="ct">/* This is the pointer used by step code for vision. This</span></td></tr>
+<tr name="56" id="56">
+<td><a id="l56" class='ln'>56</a></td><td><span class="ct"> * is created in Simulink by declaring the signal.*/</span></td></tr>
+<tr name="57" id="57">
+<td><a id="l57" class='ln'>57</a></td><td></td></tr>
+<tr name="58" id="58">
+<td><a id="l58" class='ln'>58</a></td><td><span class="kw">extern</span> <span class="kw">int</span> <a id="58c12" class="tk">run_flag</a>;</td></tr>
+<tr name="59" id="59">
+<td><a id="l59" class='ln'>59</a></td><td><span class="ct">/* This flag is used in the control thread to indicate</span></td></tr>
+<tr name="60" id="60">
+<td><a id="l60" class='ln'>60</a></td><td><span class="ct"> *the "Stop" button is pressed on the Flight Control UI.</span></td></tr>
+<tr name="61" id="61">
+<td><a id="l61" class='ln'>61</a></td><td><span class="ct"> * Here, it is used to stop the generated Image Processing code.*/</span></td></tr>
+<tr name="62" id="62">
+<td><a id="l62" class='ln'>62</a></td><td></td></tr>
+<tr name="63" id="63">
+<td><a id="l63" class='ln'>63</a></td><td><a id="63c1" class="tk">sem_t</a> <a id="63c7" class="tk">imageCopied</a>;</td></tr>
+<tr name="64" id="64">
+<td><a id="l64" class='ln'>64</a></td><td><span class="ct">/*Semaphore to signal when the image is obtained in the</span></td></tr>
+<tr name="65" id="65">
+<td><a id="l65" class='ln'>65</a></td><td><span class="ct"> * RSEDU_image_processing function. Once the image is obtained,</span></td></tr>
+<tr name="66" id="66">
+<td><a id="l66" class='ln'>66</a></td><td><span class="ct"> * the imRGB buffer is filled with the pointer to the image.</span></td></tr>
+<tr name="67" id="67">
+<td><a id="l67" class='ln'>67</a></td><td><span class="ct"> * Then a sem_post is called, which releases the semaphore.*/</span></td></tr>
+<tr name="68" id="68">
+<td><a id="l68" class='ln'>68</a></td><td></td></tr>
+<tr name="69" id="69">
+<td><a id="l69" class='ln'>69</a></td><td><span class="kw">int</span> <a id="69c5" class="tk">imageProcFinish</a> = 1;</td></tr>
+<tr name="70" id="70">
+<td><a id="l70" class='ln'>70</a></td><td><span class="ct">/*This is a flag to indicate the image processing was finished.</span></td></tr>
+<tr name="71" id="71">
+<td><a id="l71" class='ln'>71</a></td><td><span class="ct"> * This is used in the RSEDU_image_processing function to copy the image,</span></td></tr>
+<tr name="72" id="72">
+<td><a id="l72" class='ln'>72</a></td><td><span class="ct"> * if the current image processing was complete*/</span></td></tr>
+<tr name="73" id="73">
+<td><a id="l73" class='ln'>73</a></td><td></td></tr>
+<tr name="74" id="74">
+<td><a id="l74" class='ln'>74</a></td><td><span class="kw">long</span> <span class="kw">long</span> <a id="74c11" class="tk">avrgIpTime</a> = 0;</td></tr>
+<tr name="75" id="75">
+<td><a id="l75" class='ln'>75</a></td><td><span class="ct">/*This variable contains the average time taken for the image processing to</span></td></tr>
+<tr name="76" id="76">
+<td><a id="l76" class='ln'>76</a></td><td><span class="ct"> * run*/</span></td></tr>
+<tr name="77" id="77">
+<td><a id="l77" class='ln'>77</a></td><td></td></tr>
+<tr name="78" id="78">
+<td><a id="l78" class='ln'>78</a></td><td><span class="ct">/* Simple function to get the time elapsed. The start time is passed, and</span></td></tr>
+<tr name="79" id="79">
+<td><a id="l79" class='ln'>79</a></td><td><span class="ct"> * the same variable is updated in the function. After the function returns,</span></td></tr>
+<tr name="80" id="80">
+<td><a id="l80" class='ln'>80</a></td><td><span class="ct"> * the time gap is recorded in the start variable passed.</span></td></tr>
+<tr name="81" id="81">
+<td><a id="l81" class='ln'>81</a></td><td><span class="ct"> */</span></td></tr>
+<tr name="82" id="82">
+<td><a id="l82" class='ln'>82</a></td><td></td></tr>
+<tr name="83" id="83">
+<td><a id="l83" class='ln'>83</a></td><td><span class="kw">void</span><a id="83c5" class="tk">*</a> <a id="83c7" class="tk">MW_image_processing</a>(<span class="kw">void</span><a id="83c31" class="tk">*</a> <a id="83c33" class="tk">a</a>)</td></tr>
+<tr name="84" id="84">
+<td><a id="l84" class='ln'>84</a></td><td><span class="br">{</span></td></tr>
+<tr name="85" id="85">
+<td><a id="l85" class='ln'>85</a></td><td><span class="pp">#if</span> (1 <a id="85c8" class="tk">==</a> <a id="85c11" class="tk">MW_CONFIG_ENABLEPROFILING</a>)</td></tr>
+<tr name="86" id="86">
+<td><a id="l86" class='ln'>86</a></td><td>    <span class="kw">long</span> <span class="kw">long</span> <a id="86c15" class="tk">start</a> = 0 ; <span class="ct">// variable to store the start and stop times for profiling.</span></td></tr>
+<tr name="87" id="87">
+<td><a id="l87" class='ln'>87</a></td><td>    <span class="kw">static</span> <a id="87c12" class="tk">FILE</a> <a id="87c17" class="tk">*</a><a id="87c18" class="tk">ptfile</a>; <span class="ct">// File to which the profiling data is written to.</span></td></tr>
+<tr name="88" id="88">
+<td><a id="l88" class='ln'>88</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="89" id="89">
+<td><a id="l89" class='ln'>89</a></td><td>    <span class="kw">static</span> <span class="kw">int</span> <a id="89c16" class="tk">counter</a> = 2; <span class="ct">//set the counter to get the timing data.</span></td></tr>
+<tr name="90" id="90">
+<td><a id="l90" class='ln'>90</a></td><td>    <span class="kw">long</span> <span class="kw">long</span> <a id="90c15" class="tk">ipTime</a> = 0;</td></tr>
+<tr name="91" id="91">
+<td><a id="l91" class='ln'>91</a></td><td>    <span class="kw">static</span> <span class="kw">long</span> <span class="kw">long</span> <a id="91c22" class="tk">ipTimeSum</a> = 0;</td></tr>
+<tr name="92" id="92">
+<td><a id="l92" class='ln'>92</a></td><td>    </td></tr>
+<tr name="93" id="93">
+<td><a id="l93" class='ln'>93</a></td><td>    <span class="ct">//ptiming - init file</span></td></tr>
+<tr name="94" id="94">
+<td><a id="l94" class='ln'>94</a></td><td>    <span class="ct">//------------</span></td></tr>
+<tr name="95" id="95">
+<td><a id="l95" class='ln'>95</a></td><td><span class="pp">#if</span> (1 <a id="95c8" class="tk">==</a> <a id="95c11" class="tk">MW_CONFIG_ENABLEPROFILING</a>)</td></tr>
+<tr name="96" id="96">
+<td><a id="l96" class='ln'>96</a></td><td>    <a id="96c5" class="tk">ptimer_init</a>(<a id="96c17" class="tk">__func__</a>, <a id="96c27" class="tk">&amp;</a>(<a id="96c29" class="tk">ptfile</a>), <a id="96c38" class="tk">NULL</a>);</td></tr>
+<tr name="97" id="97">
+<td><a id="l97" class='ln'>97</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="98" id="98">
+<td><a id="l98" class='ln'>98</a></td><td>        <span class="kw">while</span>(1)<span class="br">{</span></td></tr>
+<tr name="99" id="99">
+<td><a id="l99" class='ln'>99</a></td><td>        <a id="99c9" class="tk">sem_wait</a>(<a id="99c18" class="tk">&amp;</a><a id="99c19" class="tk">imageCopied</a>); <span class="ct">//wait until the image is obtained.</span></td></tr>
+<tr name="100" id="100">
+<td><a id="l100" class='ln'>100</a></td><td>        <a id="100c9" class="tk">printf</a>("rsedu_vision(): Entered... \n");</td></tr>
+<tr name="101" id="101">
+<td><a id="l101" class='ln'>101</a></td><td>        </td></tr>
+<tr name="102" id="102">
+<td><a id="l102" class='ln'>102</a></td><td>        <a id="102c9" class="tk">ptimer_start</a>(<a id="102c22" class="tk">&amp;</a><a id="102c23" class="tk">ipTime</a>);</td></tr>
+<tr name="103" id="103">
+<td><a id="l103" class='ln'>103</a></td><td>        <span class="ct">/* This line is added to get the image processing time for each</span></td></tr>
+<tr name="104" id="104">
+<td><a id="l104" class='ln'>104</a></td><td><span class="ct">         * cycle, regardless of whether the MW_CONFIG_ENABLEPROFILING is defined</span></td></tr>
+<tr name="105" id="105">
+<td><a id="l105" class='ln'>105</a></td><td><span class="ct">         * or not.</span></td></tr>
+<tr name="106" id="106">
+<td><a id="l106" class='ln'>106</a></td><td><span class="ct">         */</span></td></tr>
+<tr name="107" id="107">
+<td><a id="l107" class='ln'>107</a></td><td>        </td></tr>
+<tr name="108" id="108">
+<td><a id="l108" class='ln'>108</a></td><td><span class="pp">#if</span> (1 <a id="108c8" class="tk">==</a> <a id="108c11" class="tk">MW_CONFIG_ENABLEPROFILING</a>)</td></tr>
+<tr name="109" id="109">
+<td><a id="l109" class='ln'>109</a></td><td>        </td></tr>
+<tr name="110" id="110">
+<td><a id="l110" class='ln'>110</a></td><td>            <span class="ct">//Start the profiling (Basically takes a note of the time stamp)</span></td></tr>
+<tr name="111" id="111">
+<td><a id="l111" class='ln'>111</a></td><td>            <a id="111c13" class="tk">ptimer_start</a>(<a id="111c26" class="tk">&amp;</a><a id="111c27" class="tk">start</a>);</td></tr>
+<tr name="112" id="112">
+<td><a id="l112" class='ln'>112</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="113" id="113">
+<td><a id="l113" class='ln'>113</a></td><td>        <span class="ct">/* This is the step function for the Image Processing Subsystem.</span></td></tr>
+<tr name="114" id="114">
+<td><a id="l114" class='ln'>114</a></td><td><span class="ct">         * When the image processing is enabled,</span></td></tr>
+<tr name="115" id="115">
+<td><a id="l115" class='ln'>115</a></td><td><span class="ct">         * step1() contains the image processing code*/</span></td></tr>
+<tr name="116" id="116">
+<td><a id="l116" class='ln'>116</a></td><td>        <a id="116c9" class="tk">MW_StringifyDefineFunction</a>(<a id="116c36" class="tk">MODEL</a>,<a id="116c42" class="tk">_step1</a>)();</td></tr>
+<tr name="117" id="117">
+<td><a id="l117" class='ln'>117</a></td><td>        </td></tr>
+<tr name="118" id="118">
+<td><a id="l118" class='ln'>118</a></td><td>        <a id="118c9" class="tk">ipTime</a> = <a id="118c18" class="tk">ptimer_stopstore</a>(<a id="118c35" class="tk">ipTime</a>, <a id="118c43" class="tk">NULL</a>)<a id="118c48" class="tk">/</a>1000; </td></tr>
+<tr name="119" id="119">
+<td><a id="l119" class='ln'>119</a></td><td>        <span class="ct">/*Get the time consumed by the image processing and convert it to milliseconds.*/</span></td></tr>
+<tr name="120" id="120">
+<td><a id="l120" class='ln'>120</a></td><td>        <a id="120c9" class="tk">ipTimeSum</a> = <a id="120c21" class="tk">ipTimeSum</a> <a id="120c31" class="tk">+</a> <a id="120c33" class="tk">ipTime</a>;</td></tr>
+<tr name="121" id="121">
+<td><a id="l121" class='ln'>121</a></td><td>        <span class="ct">/*accumulate the values, which will be used to get the average time of</span></td></tr>
+<tr name="122" id="122">
+<td><a id="l122" class='ln'>122</a></td><td><span class="ct">         *image processing.</span></td></tr>
+<tr name="123" id="123">
+<td><a id="l123" class='ln'>123</a></td><td><span class="ct">         */</span></td></tr>
+<tr name="124" id="124">
+<td><a id="l124" class='ln'>124</a></td><td>        </td></tr>
+<tr name="125" id="125">
+<td><a id="l125" class='ln'>125</a></td><td>        <a id="125c9" class="tk">avrgIpTime</a> = <a id="125c22" class="tk">ipTimeSum</a> <a id="125c32" class="tk">/</a> (<a id="125c35" class="tk">counter</a> <a id="125c43" class="tk">-</a> 1);</td></tr>
+<tr name="126" id="126">
+<td><a id="l126" class='ln'>126</a></td><td>        <span class="ct">/*get the average Image processing time*/</span></td></tr>
+<tr name="127" id="127">
+<td><a id="l127" class='ln'>127</a></td><td>        </td></tr>
+<tr name="128" id="128">
+<td><a id="l128" class='ln'>128</a></td><td>        <a id="128c9" class="tk">printf</a>("rsedu_vision(): Exited. Time taken to process the image = %lldms\n", <a id="128c86" class="tk">ipTime</a>);</td></tr>
+<tr name="129" id="129">
+<td><a id="l129" class='ln'>129</a></td><td>        </td></tr>
+<tr name="130" id="130">
+<td><a id="l130" class='ln'>130</a></td><td><span class="pp">#if</span>(1 <a id="130c7" class="tk">==</a> <a id="130c10" class="tk">MW_CONFIG_ENABLEPROFILING</a>)</td></tr>
+<tr name="131" id="131">
+<td><a id="l131" class='ln'>131</a></td><td>        <span class="ct">//Stop the profiling (Basically takes a note of the time stamp and writes it to a file)</span></td></tr>
+<tr name="132" id="132">
+<td><a id="l132" class='ln'>132</a></td><td>        <a id="132c9" class="tk">ptimer_stopstore</a>(<a id="132c26" class="tk">start</a>, <a id="132c33" class="tk">ptfile</a>);</td></tr>
+<tr name="133" id="133">
+<td><a id="l133" class='ln'>133</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="134" id="134">
+<td><a id="l134" class='ln'>134</a></td><td>        <a id="134c9" class="tk">imageProcFinish</a> = 1;</td></tr>
+<tr name="135" id="135">
+<td><a id="l135" class='ln'>135</a></td><td>        </td></tr>
+<tr name="136" id="136">
+<td><a id="l136" class='ln'>136</a></td><td>        <span class="kw">if</span> (<a id="136c13" class="tk">run_flag</a> <a id="136c22" class="tk">==</a> 0)</td></tr>
+<tr name="137" id="137">
+<td><a id="l137" class='ln'>137</a></td><td>        <span class="br">{</span>              </td></tr>
+<tr name="138" id="138">
+<td><a id="l138" class='ln'>138</a></td><td>            <span class="kw">break</span>;  <span class="ct">//break the loop once the flight is over.</span></td></tr>
+<tr name="139" id="139">
+<td><a id="l139" class='ln'>139</a></td><td>        <span class="br">}</span></td></tr>
+<tr name="140" id="140">
+<td><a id="l140" class='ln'>140</a></td><td>        <a id="140c9" class="tk">counter</a><a id="140c16" class="tk">++</a>;</td></tr>
+<tr name="141" id="141">
+<td><a id="l141" class='ln'>141</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="142" id="142">
+<td><a id="l142" class='ln'>142</a></td><td>    <span class="kw">return</span> <a id="142c12" class="tk">NULL</a>;</td></tr>
+<tr name="143" id="143">
+<td><a id="l143" class='ln'>143</a></td><td><span class="br">}</span></td></tr>
+<tr name="144" id="144">
+<td><a id="l144" class='ln'>144</a></td><td></td></tr>
+<tr name="145" id="145">
+<td><a id="l145" class='ln'>145</a></td><td><span class="kw">void</span> <a id="145c6" class="tk">create_image_thread</a>(<span class="kw">void</span>)</td></tr>
+<tr name="146" id="146">
+<td><a id="l146" class='ln'>146</a></td><td><span class="br">{</span></td></tr>
+<tr name="147" id="147">
+<td><a id="l147" class='ln'>147</a></td><td>    <span class="kw">int</span> <a id="147c9" class="tk">err</a>, <a id="147c14" class="tk">status</a>;</td></tr>
+<tr name="148" id="148">
+<td><a id="l148" class='ln'>148</a></td><td>    <a id="148c5" class="tk">pthread_attr_t</a> <a id="148c20" class="tk">attr</a>;</td></tr>
+<tr name="149" id="149">
+<td><a id="l149" class='ln'>149</a></td><td>    <span class="kw">struct</span> <a id="149c12" class="tk">sched_param</a> <a id="149c24" class="tk">param</a>;</td></tr>
+<tr name="150" id="150">
+<td><a id="l150" class='ln'>150</a></td><td>    <a id="150c5" class="tk">pthread_t</a> <a id="150c15" class="tk">imageThreadHandle</a>;</td></tr>
+<tr name="151" id="151">
+<td><a id="l151" class='ln'>151</a></td><td>    </td></tr>
+<tr name="152" id="152">
+<td><a id="l152" class='ln'>152</a></td><td>    <span class="kw">int</span> <a id="152c9" class="tk">policy</a>;</td></tr>
+<tr name="153" id="153">
+<td><a id="l153" class='ln'>153</a></td><td>    <a id="153c5" class="tk">pthread_getschedparam</a>(<a id="153c27" class="tk">pthread_self</a>(), <a id="153c43" class="tk">&amp;</a><a id="153c44" class="tk">policy</a>,<a id="153c51" class="tk">&amp;</a><a id="153c52" class="tk">param</a>);</td></tr>
+<tr name="154" id="154">
+<td><a id="l154" class='ln'>154</a></td><td>    <a id="154c5" class="tk">printf</a>("create_image_thread(): Image thread policy = %d and priority=%d\n", (<span class="kw">int</span>)<a id="154c86" class="tk">policy</a>,<a id="154c93" class="tk">param</a>.<a id="154c99" class="tk">sched_priority</a>);</td></tr>
+<tr name="155" id="155">
+<td><a id="l155" class='ln'>155</a></td><td>    </td></tr>
+<tr name="156" id="156">
+<td><a id="l156" class='ln'>156</a></td><td>    <a id="156c5" class="tk">pthread_attr_init</a>(<a id="156c23" class="tk">&amp;</a><a id="156c24" class="tk">attr</a>);</td></tr>
+<tr name="157" id="157">
+<td><a id="l157" class='ln'>157</a></td><td>    </td></tr>
+<tr name="158" id="158">
+<td><a id="l158" class='ln'>158</a></td><td>    <a id="158c5" class="tk">err</a> = <a id="158c11" class="tk">pthread_attr_setinheritsched</a>(<a id="158c40" class="tk">&amp;</a><a id="158c41" class="tk">attr</a>,<a id="158c46" class="tk">PTHREAD_EXPLICIT_SCHED</a>);</td></tr>
+<tr name="159" id="159">
+<td><a id="l159" class='ln'>159</a></td><td>    <a id="159c5" class="tk">printf</a>("create_image_thread(): Image thread inherit scheduler option error=%d\n", <a id="159c87" class="tk">err</a>);</td></tr>
+<tr name="160" id="160">
+<td><a id="l160" class='ln'>160</a></td><td>    </td></tr>
+<tr name="161" id="161">
+<td><a id="l161" class='ln'>161</a></td><td>    <a id="161c5" class="tk">status</a> = <a id="161c14" class="tk">pthread_attr_setdetachstate</a>(<a id="161c42" class="tk">&amp;</a><a id="161c43" class="tk">attr</a>, <a id="161c49" class="tk">PTHREAD_CREATE_DETACHED</a>);</td></tr>
+<tr name="162" id="162">
+<td><a id="l162" class='ln'>162</a></td><td>    <a id="162c5" class="tk">printf</a>("create_image_thread(): value of detach status=%d\n", <a id="162c66" class="tk">status</a>);</td></tr>
+<tr name="163" id="163">
+<td><a id="l163" class='ln'>163</a></td><td>    </td></tr>
+<tr name="164" id="164">
+<td><a id="l164" class='ln'>164</a></td><td>    <a id="164c5" class="tk">err</a> = <a id="164c11" class="tk">pthread_attr_setstacksize</a>(<a id="164c37" class="tk">&amp;</a><a id="164c38" class="tk">attr</a>,<a id="164c43" class="tk">PTHREAD_STACK_MIN</a>);</td></tr>
+<tr name="165" id="165">
+<td><a id="l165" class='ln'>165</a></td><td>    <a id="165c5" class="tk">printf</a>("create_image_thread(): stacksize before thread creation err=%d\n", <a id="165c80" class="tk">err</a>);</td></tr>
+<tr name="166" id="166">
+<td><a id="l166" class='ln'>166</a></td><td>    </td></tr>
+<tr name="167" id="167">
+<td><a id="l167" class='ln'>167</a></td><td>    <a id="167c5" class="tk">status</a> = <a id="167c14" class="tk">pthread_attr_setschedpolicy</a>(<a id="167c42" class="tk">&amp;</a><a id="167c43" class="tk">attr</a>, <a id="167c49" class="tk">SCHED_OTHER</a>);</td></tr>
+<tr name="168" id="168">
+<td><a id="l168" class='ln'>168</a></td><td>    <a id="168c5" class="tk">printf</a>("create_image_thread(): value of scheduler policy status=%d\n", <a id="168c76" class="tk">status</a>);</td></tr>
+<tr name="169" id="169">
+<td><a id="l169" class='ln'>169</a></td><td>    </td></tr>
+<tr name="170" id="170">
+<td><a id="l170" class='ln'>170</a></td><td>    <a id="170c5" class="tk">param</a>.<a id="170c11" class="tk">sched_priority</a> = 0;</td></tr>
+<tr name="171" id="171">
+<td><a id="l171" class='ln'>171</a></td><td>    <a id="171c5" class="tk">status</a> = <a id="171c14" class="tk">pthread_attr_setschedparam</a>(<a id="171c41" class="tk">&amp;</a><a id="171c42" class="tk">attr</a>, <a id="171c48" class="tk">&amp;</a><a id="171c49" class="tk">param</a>);</td></tr>
+<tr name="172" id="172">
+<td><a id="l172" class='ln'>172</a></td><td>    <a id="172c5" class="tk">printf</a>("create_image_thread(): value of scheduler param status=%d\n", <a id="172c75" class="tk">status</a>);</td></tr>
+<tr name="173" id="173">
+<td><a id="l173" class='ln'>173</a></td><td>    </td></tr>
+<tr name="174" id="174">
+<td><a id="l174" class='ln'>174</a></td><td>    <a id="174c5" class="tk">err</a> = <a id="174c11" class="tk">pthread_create</a>(<a id="174c26" class="tk">&amp;</a><a id="174c27" class="tk">imageThreadHandle</a>, <a id="174c46" class="tk">&amp;</a><a id="174c47" class="tk">attr</a>, <a id="174c53" class="tk">&amp;</a><a id="174c54" class="tk">MW_image_processing</a>, <a id="174c75" class="tk">NULL</a>);</td></tr>
+<tr name="175" id="175">
+<td><a id="l175" class='ln'>175</a></td><td>    <span class="kw">if</span> (<a id="175c9" class="tk">err</a> <a id="175c13" class="tk">!=</a> 0)</td></tr>
+<tr name="176" id="176">
+<td><a id="l176" class='ln'>176</a></td><td>        <a id="176c9" class="tk">printf</a>("create_image_thread(): can't create Image thread :[%s]", <a id="176c74" class="tk">strerror</a>(<a id="176c83" class="tk">err</a>));</td></tr>
+<tr name="177" id="177">
+<td><a id="l177" class='ln'>177</a></td><td>    <span class="kw">else</span></td></tr>
+<tr name="178" id="178">
+<td><a id="l178" class='ln'>178</a></td><td>        <a id="178c9" class="tk">printf</a>("create_image_thread(): Image Thread created successfully\n");</td></tr>
+<tr name="179" id="179">
+<td><a id="l179" class='ln'>179</a></td><td><span class="br">}</span></td></tr>
+<tr name="180" id="180">
+<td><a id="l180" class='ln'>180</a></td><td></td></tr>
+<tr name="181" id="181">
+<td><a id="l181" class='ln'>181</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="182" id="182">
+<td><a id="l182" class='ln'>182</a></td><td></td></tr>
+<tr name="183" id="183">
+<td><a id="l183" class='ln'>183</a></td><td><span class="kw">void</span> <a id="183c6" class="tk">RSEDU_image_processing</a>(<span class="kw">void</span> <a id="183c34" class="tk">*</a> <a id="183c36" class="tk">buffer</a>)</td></tr>
+<tr name="184" id="184">
+<td><a id="l184" class='ln'>184</a></td><td><span class="br">{</span></td></tr>
+<tr name="185" id="185">
+<td><a id="l185" class='ln'>185</a></td><td><span class="pp">#ifdef</span> <a id="185c8" class="tk">MW_HAS_IMAGE_PROCESSING</a></td></tr>
+<tr name="186" id="186">
+<td><a id="l186" class='ln'>186</a></td><td>    <span class="kw">static</span> <span class="kw">int</span> <a id="186c16" class="tk">counter</a> = 0;</td></tr>
+<tr name="187" id="187">
+<td><a id="l187" class='ln'>187</a></td><td>    <a id="187c5" class="tk">counter</a><a id="187c12" class="tk">++</a>;</td></tr>
+<tr name="188" id="188">
+<td><a id="l188" class='ln'>188</a></td><td>    </td></tr>
+<tr name="189" id="189">
+<td><a id="l189" class='ln'>189</a></td><td>    <span class="kw">if</span>(<a id="189c8" class="tk">counter</a> <a id="189c16" class="tk">==</a> 1)</td></tr>
+<tr name="190" id="190">
+<td><a id="l190" class='ln'>190</a></td><td>    <span class="br">{</span></td></tr>
+<tr name="191" id="191">
+<td><a id="l191" class='ln'>191</a></td><td>        <a id="191c9" class="tk">sem_init</a>(<a id="191c18" class="tk">&amp;</a><a id="191c19" class="tk">imageCopied</a>, 0, 0);</td></tr>
+<tr name="192" id="192">
+<td><a id="l192" class='ln'>192</a></td><td>        <a id="192c9" class="tk">create_image_thread</a>();</td></tr>
+<tr name="193" id="193">
+<td><a id="l193" class='ln'>193</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="194" id="194">
+<td><a id="l194" class='ln'>194</a></td><td>    </td></tr>
+<tr name="195" id="195">
+<td><a id="l195" class='ln'>195</a></td><td>    <span class="kw">if</span> (<a id="195c9" class="tk">runVisionCode</a> <a id="195c23" class="tk">==</a> 1 <a id="195c28" class="tk">&amp;&amp;</a> <a id="195c31" class="tk">run_flag</a> <a id="195c40" class="tk">==</a> 1 <a id="195c45" class="tk">&amp;&amp;</a> <a id="195c48" class="tk">imageProcFinish</a> <a id="195c64" class="tk">==</a> 1)</td></tr>
+<tr name="196" id="196">
+<td><a id="l196" class='ln'>196</a></td><td>    <span class="br">{</span></td></tr>
+<tr name="197" id="197">
+<td><a id="l197" class='ln'>197</a></td><td>        <a id="197c9" class="tk">imRGB</a> = <a id="197c17" class="tk">buffer</a>;</td></tr>
+<tr name="198" id="198">
+<td><a id="l198" class='ln'>198</a></td><td>        <span class="ct">/* Fill the pointer of the image used by Simulink,</span></td></tr>
+<tr name="199" id="199">
+<td><a id="l199" class='ln'>199</a></td><td><span class="ct">         * with the address of the image exposed by Parrot.*/</span></td></tr>
+<tr name="200" id="200">
+<td><a id="l200" class='ln'>200</a></td><td>        <a id="200c9" class="tk">sem_post</a>(<a id="200c18" class="tk">&amp;</a><a id="200c19" class="tk">imageCopied</a>); <span class="ct">//Post the semaphore to start the image processing.</span></td></tr>
+<tr name="201" id="201">
+<td><a id="l201" class='ln'>201</a></td><td>        </td></tr>
+<tr name="202" id="202">
+<td><a id="l202" class='ln'>202</a></td><td>        <a id="202c9" class="tk">imageProcFinish</a> = 0;</td></tr>
+<tr name="203" id="203">
+<td><a id="l203" class='ln'>203</a></td><td>        <span class="ct">/*clear the flag, which will be updated from the</span></td></tr>
+<tr name="204" id="204">
+<td><a id="l204" class='ln'>204</a></td><td><span class="ct">         * image processing thread.*/</span></td></tr>
+<tr name="205" id="205">
+<td><a id="l205" class='ln'>205</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="206" id="206">
+<td><a id="l206" class='ln'>206</a></td><td>    <a id="206c5" class="tk">usleep</a>(50000);</td></tr>
+<tr name="207" id="207">
+<td><a id="l207" class='ln'>207</a></td><td>    <span class="ct">/*This sleep is required to make the Vision thread sleep so that the</span></td></tr>
+<tr name="208" id="208">
+<td><a id="l208" class='ln'>208</a></td><td><span class="ct">     * newly created image processing thread and the external mode thread</span></td></tr>
+<tr name="209" id="209">
+<td><a id="l209" class='ln'>209</a></td><td><span class="ct">     * gets time to run. Without this sleep, new images are captured and</span></td></tr>
+<tr name="210" id="210">
+<td><a id="l210" class='ln'>210</a></td><td><span class="ct">     * dropped and consumes CPU without any purpose. Since a new image is </span></td></tr>
+<tr name="211" id="211">
+<td><a id="l211" class='ln'>211</a></td><td><span class="ct">     * obtained only after this sleep, this can be considered to be the </span></td></tr>
+<tr name="212" id="212">
+<td><a id="l212" class='ln'>212</a></td><td><span class="ct">     * sample time of the image processing. The sample time is 50ms.</span></td></tr>
+<tr name="213" id="213">
+<td><a id="l213" class='ln'>213</a></td><td><span class="ct">     */</span></td></tr>
+<tr name="214" id="214">
+<td><a id="l214" class='ln'>214</a></td><td><span class="pp">#endif</span></td></tr>
+<tr name="215" id="215">
+<td><a id="l215" class='ln'>215</a></td><td>    </td></tr>
+<tr name="216" id="216">
+<td><a id="l216" class='ln'>216</a></td><td>    <span class="ct">/*  Image capture logic */</span></td></tr>
+<tr name="217" id="217">
+<td><a id="l217" class='ln'>217</a></td><td>    <span class="kw">if</span> (1 <a id="217c11" class="tk">==</a> <a id="217c14" class="tk">capture</a>) <span class="br">{</span></td></tr>
+<tr name="218" id="218">
+<td><a id="l218" class='ln'>218</a></td><td>        <a id="218c9" class="tk">write</a>(<a id="218c15" class="tk">connfd</a>,<a id="218c22" class="tk">buffer</a>,<span class="kw">sizeof</span>(<a id="218c36" class="tk">pixel2_t</a>)<a id="218c45" class="tk">*</a>80<a id="218c48" class="tk">*</a>120);   <span class="ct">// Write YUV422 pixel values into socket</span></td></tr>
+<tr name="219" id="219">
+<td><a id="l219" class='ln'>219</a></td><td>        <a id="219c9" class="tk">printf</a>("rsedu_vis(): Image capture successful. \n");</td></tr>
+<tr name="220" id="220">
+<td><a id="l220" class='ln'>220</a></td><td>        <a id="220c9" class="tk">capture</a>  = 0; <span class="ct">//Reset the image capture flag</span></td></tr>
+<tr name="221" id="221">
+<td><a id="l221" class='ln'>221</a></td><td>    <span class="br">}</span></td></tr>
+<tr name="222" id="222">
+<td><a id="l222" class='ln'>222</a></td><td>    </td></tr>
+<tr name="223" id="223">
+<td><a id="l223" class='ln'>223</a></td><td><span class="br">}</span></td></tr>
+</table>
+</pre>
+</body>
+</html>

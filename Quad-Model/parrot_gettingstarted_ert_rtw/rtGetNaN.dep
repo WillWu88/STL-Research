@@ -1,0 +1,14 @@
+rtGetNaN.o rtGetNaN.o: \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtGetNaN.c \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtGetNaN.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtwtypes.h \
+ C:/PROGRA~1/MATLAB/R2021a/extern/include/tmwtypes.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rt_nonfinite.h
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtGetNaN.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtwtypes.h:
+
+C:/PROGRA~1/MATLAB/R2021a/extern/include/tmwtypes.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rt_nonfinite.h:

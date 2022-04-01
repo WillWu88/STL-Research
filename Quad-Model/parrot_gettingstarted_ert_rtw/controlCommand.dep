@@ -1,0 +1,26 @@
+controlCommand.o controlCommand.o: \
+ C:/ProgramData/MATLAB/SupportPackages/R2021a/toolbox/target/supportpackages/parrot/src/controlCommand.c \
+ C:/PROGRA~3/MATLAB/SUPPOR~1/R2021a/toolbox/target/SUPPOR~1/parrot/include/controlCommand.h \
+ C:/PROGRA~3/MATLAB/SUPPOR~1/R2021a/toolbox/target/SUPPOR~1/parrot/include/HAL.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/parrot_gettingstarted_types.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtwtypes.h \
+ C:/PROGRA~1/MATLAB/R2021a/extern/include/tmwtypes.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/builtin_typeid_types.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/multiword_types.h \
+ C:/PROGRA~3/MATLAB/SUPPOR~1/R2021a/toolbox/target/SUPPOR~1/parrot/include/HAL.h
+
+C:/PROGRA~3/MATLAB/SUPPOR~1/R2021a/toolbox/target/SUPPOR~1/parrot/include/controlCommand.h:
+
+C:/PROGRA~3/MATLAB/SUPPOR~1/R2021a/toolbox/target/SUPPOR~1/parrot/include/HAL.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/parrot_gettingstarted_types.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtwtypes.h:
+
+C:/PROGRA~1/MATLAB/R2021a/extern/include/tmwtypes.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/builtin_typeid_types.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/multiword_types.h:
+
+C:/PROGRA~3/MATLAB/SUPPOR~1/R2021a/toolbox/target/SUPPOR~1/parrot/include/HAL.h:

@@ -1,0 +1,29 @@
+rt_logging.o rt_logging.o: \
+ C:/PROGRA~1/MATLAB/R2021a/rtw/c/src/rt_logging.c \
+ C:/PROGRA~1/MATLAB/R2021a/rtw/c/src/rt_logging.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtwtypes.h \
+ C:/PROGRA~1/MATLAB/R2021a/extern/include/tmwtypes.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/builtin_typeid_types.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtwtypes.h \
+ C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/multiword_types.h \
+ C:/PROGRA~1/MATLAB/R2021a/rtw/c/src/rt_mxclassid.h \
+ C:/PROGRA~1/MATLAB/R2021a/simulink/include/rtw_matlogging.h \
+ C:/PROGRA~1/MATLAB/R2021a/simulink/include/sl_types_def.h
+
+C:/PROGRA~1/MATLAB/R2021a/rtw/c/src/rt_logging.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtwtypes.h:
+
+C:/PROGRA~1/MATLAB/R2021a/extern/include/tmwtypes.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/builtin_typeid_types.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/rtwtypes.h:
+
+C:/Users/Willi/Desktop/Research/STL-Research/Quad-Model/parrot_gettingstarted_ert_rtw/multiword_types.h:
+
+C:/PROGRA~1/MATLAB/R2021a/rtw/c/src/rt_mxclassid.h:
+
+C:/PROGRA~1/MATLAB/R2021a/simulink/include/rtw_matlogging.h:
+
+C:/PROGRA~1/MATLAB/R2021a/simulink/include/sl_types_def.h:

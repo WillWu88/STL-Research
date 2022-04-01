@@ -1,12 +1,14 @@
 %% Simulink init script
 % By Will Wu
-clear, clc, close all
+clc, close all
 
-%% Constant Declaration:
-m = 0.468;
-Jxx = 0.69e-4;
-Jyy = 0.775e-4;
-Jzz = 1.5e-4;
+%% Constant Declaration: needs revision to actual drone
+m = 0.588; 
+
+% rotation acquired via 
+Jxx = 0.005;
+Jyy = 0.005;
+Jzz = 0.009;
 g = 9.8;
 motor_num = 4;
 
@@ -28,6 +30,8 @@ max_rev = max_rpm/60;
 air_density = 1.225; % kg/m^3
 c_p = 0.041; % power coefficient, assume flat, constant coeff of power
 
+T_s = 0.008;
+F_s = 1/T_s;
 
 %% Curve fit estimating thrust coefficient
 rev = [11000 19000 23000 25000 26500 29000]'/60;

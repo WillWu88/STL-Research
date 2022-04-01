@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'px4demo_AttitudeControllerWithJoystick_quadrotor'.
 //
-// Model version                  : 2.0
+// Model version                  : 2.1
 // Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
-// C/C++ source code generated on : Mon Mar 21 10:32:49 2022
+// C/C++ source code generated on : Wed Mar 30 15:39:41 2022
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -41,49 +41,6 @@
 //    Signed integer division rounds to: Zero
 //    Shift right on a signed integer as arithmetic shift: on
 // =======================================================================
-#ifdef PORTABLE_WORDSIZES              // PORTABLE_WORDSIZES defined
-
-//=======================================================================*
-//  Host information
-//    Number of bits:     char:   8    short:   16    int:  32
-//                        long:  32
-//                        long long:  64
-//                        native word size:  64
-// =======================================================================
-
-//=======================================================================*
-//  Fixed width word size data types:                                     *
-//    int8_T, int16_T, int32_T     - signed 8, 16, or 32 bit integers     *
-//    uint8_T, uint16_T, uint32_T  - unsigned 8, 16, or 32 bit integers   *
-//    real32_T, real64_T           - 32 and 64 bit floating point numbers *
-// =======================================================================
-typedef signed char int8_T;
-typedef unsigned char uint8_T;
-typedef short int16_T;
-typedef unsigned short uint16_T;
-typedef int int32_T;
-typedef unsigned int uint32_T;
-typedef float real32_T;
-typedef double real64_T;
-
-//===========================================================================*
-//  Generic type definitions: boolean_T, char_T, byte_T, int_T, uint_T,       *
-//                            real_T, time_T, ulong_T, ulonglong_T.           *
-// ===========================================================================
-typedef double real_T;
-typedef double time_T;
-typedef unsigned char boolean_T;
-typedef int int_T;
-typedef unsigned int uint_T;
-typedef unsigned int ulong_T;
-typedef unsigned long long ulonglong_T;
-typedef char char_T;
-typedef unsigned char uchar_T;
-typedef char_T byte_T;
-typedef long long int64_T;
-typedef unsigned long long uint64_T;
-
-#else                                  // PORTABLE_WORDSIZES not defined
 
 //=======================================================================*
 //  Fixed width word size data types:                                     *
@@ -116,8 +73,6 @@ typedef unsigned long long ulonglong_T;
 typedef char char_T;
 typedef unsigned char uchar_T;
 typedef char_T byte_T;
-
-#endif                                 // PORTABLE_WORDSIZES
 
 //===========================================================================*
 //  Complex number type definitions                                           *

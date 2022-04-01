@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'px4demo_AttitudeControllerWithJoystick_quadrotor'.
 //
-// Model version                  : 2.0
+// Model version                  : 2.1
 // Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
-// C/C++ source code generated on : Mon Mar 21 10:32:49 2022
+// C/C++ source code generated on : Wed Mar 30 15:39:41 2022
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -19,7 +19,6 @@
 #ifndef RTW_HEADER_px4demo_AttitudeControllerWithJoystick_quadrotor_private_h_
 #define RTW_HEADER_px4demo_AttitudeControllerWithJoystick_quadrotor_private_h_
 #include "rtwtypes.h"
-#ifndef PORTABLE_WORDSIZES
 #ifndef UCHAR_MAX
 #include <limits.h>
 #endif
@@ -69,8 +68,6 @@ preprocessor word size checks.
 #endif
 
 // Skipping ulong_long/long_long check: insufficient preprocessor integer range. 
-#endif                                 // PORTABLE_WORDSIZES
-
 extern real_T rt_atan2d_snf(real_T u0, real_T u1);
 
 #endif

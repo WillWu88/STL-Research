@@ -7,9 +7,9 @@
 //
 // Code generated for Simulink model 'px4demo_AttitudeControllerWithJoystick_quadrotor'.
 //
-// Model version                  : 2.0
+// Model version                  : 2.1
 // Simulink Coder version         : 9.5 (R2021a) 14-Nov-2020
-// C/C++ source code generated on : Mon Mar 21 10:32:49 2022
+// C/C++ source code generated on : Wed Mar 30 15:39:41 2022
 //
 // Target selection: ert.tlc
 // Embedded hardware selection: ARM Compatible->ARM Cortex
@@ -87,6 +87,7 @@ void *terminateTask(void *arg)
 
 int px4_simulink_app_task_main (int argc, char *argv[])
 {
+  px4_simulink_app_control_MAVLink();
   rtmSetErrorStatus(px4demo_AttitudeControllerWi_M, 0);
 
   // Initialize model
