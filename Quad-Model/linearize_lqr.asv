@@ -27,9 +27,7 @@ dx = [simplify(r_b2e * v_b);
       simplify(1/m * ([0 0 T]' - T*[K_c*px_dot_b;K_c*px_dot_b;0] + r_e2b * [0 0 m*g]' ...
     + cross(rot_rate,m*v_b)));
       rot_rate;
-      inv(J)*([A E R]' + cross(rot_rate, prop_j*2*pi*...
-      ([1 -1 1 -1]*sqrt(inv([a 0 0 0;0 b 0 0; 0 0 c 0; 0 0 0 d] * dynamics_matrix)))) ...
-      - cross(rot_rate, J*rot_rate))];
+      inv(J)*([A E R]' - cross(rot_rate, J*rot_rate))];
 
      
 T_eq = g*m/(cos(0)*cos(0));
@@ -55,10 +53,10 @@ R = eye(length(u));
 
 [lqr_K, S, e] = lqr(sys, Q, R, zeros(length(x),length(u)));
 
-lqr_yaw_gain = [lqr_K(4,9), lqr_K(4,12)];
-lqr_pitch_gain = [lqr_K(2,8), lqr_K(2,11)];
-lqr_roll_gain = [lqr_K(3,7), lqr_K(3,10)];
-lqr_thrust_gain = [lqr_K(1,3),lqr_K(1,6)];
+lqr_yaw_gain = lqr_K(4,12);
+lqr_pitch_gain = lqr_K(2,11);
+lqr_roll_gain = lqr_K(3,10);
+lqr_thrust_gain = [lqr_K(1,3),lqr_K(1,6)]';
 
 %% Set Points
 hover_height = 5; %meters
