@@ -20,6 +20,8 @@ J = [Jxx 0 0; 0 Jyy 0; 0 0 Jzz];
 F_b = zeros;
 M_b = zeros;
 
+k_c = 0.22;
+
 % needs measurement, also doesn't matter since it's mixer related
 % x_dist = 0.13; % prop to com x distance
 % y_dist = 0.22; % prop to com y distance, in meters
@@ -37,6 +39,9 @@ air_density = 1.225; % kg/m^3
 F_s = 400; %Hz, to be adjusted
 T_s = 1/F_s;
 
+%% Environmental Parameters
+windVel = [0 0 0]';
+dragCoeffMov = 0.01;
 
 %% Mixer Parameters
 
@@ -57,49 +62,76 @@ motor_mix_vector = [1 -1 1 -1];
 
 % Linearization to find A, B matrix
 
-h = 5; % elevation, arbitrary
+h = 2; % elevation, arbitrary
 
-syms q0 q1 q2 q3 p q r A E R
+syms pn pe pd u v w q1 q2 q3 p q r T A E R
 
-x = [q0 q1 q2 q3 p q r];
+% reduced system, q0 is obtained thru unit quaternion
 
-rot = x(1:4)';
-omega = x(5:7)';
+x = [pn pe pd u v w q1 q2 q3 p q r];
 
-u = [A E R];
+rot = x(7:9)';
+omega = x(10:12)';
+
+control = [T A E R];
 
 % system of diff eq
 % ref: "Aircraft control and simulation" eqn 1.8-15
-rot_dot = 1/2 * [0 -p -q -r;
-                 p 0 r -q;
-                 q -r 0 p;
-                 r q -p 0] * rot;
+% eth technical report
+% 4481 Homework Journal
 
-omega_dot = inv(J)*([A E R]' - cross(omega, J*omega));
+q0 = sqrt(1-rot'*rot);
 
-dx = [rot_dot;omega_dot];
+quatdcm(1,:) = [1-2*q2^2-2*q3^2, 2*(q1*q2 + q0*q3), 2*(q1*q3 - q0*q2)];
+quatdcm(2,:) = [2*(q1*q2-q0*q3), 1-2*q1^2-q3^2, 2*(q2*q3+q0*q1)];
+quatdcm(3,:) = [2*(q1*q3 + q0*q2), 2*(q2*q3-q0*q1), 1-2*q1^2-2*q2^2];
+
+p_dot = quatdcm * [u v w]';
+
+grav = [0 0 m*g]';
+v_dot = 1/m * ([0 0 -T]' ...
+            - T * [k_c*u k_c*v 0]' ...
+            + quatdcm * grav ...
+            - cross ([p q r], m*[u v w])');
+
+
+% skew-matrix of q1 thru q3
+sq13 = [0 -q3 -q2;
+        q3 0 -q1;
+        -q2 q1 0];
+q0I = q0* eye(3);
+
+rot_dot = 1/2 * (sq13 + q0I) * omega;
+
+omega_dot = J\([A E R]' - cross(omega, J*omega));
+
+dx = [p_dot;v_dot;rot_dot;omega_dot];
 % eqilibrium points
-x_eq = [1 0 0 0 0 0 0]; % quaternion eq condition
-u_eq = [0 0 0];
+x_eq = [0 0 h 0 0 0 0 0 0 0 0 0]; % quaternion eq condition
+u_eq = [-m*g 0 0 0];
 
 %% Linerization
 
 jacob_a = jacobian(dx, x);
-jacob_b = jacobian(dx, u);
+jacob_b = jacobian(dx, control);
 
 % substitute in equilibrium and 
-lin_a_eq = double(subs(jacob_a, [x u], [x_eq u_eq]));
-lin_b_eq = double(subs(jacob_b, [x u], [x_eq u_eq]));
+lin_a_eq = double(subs(jacob_a, [x control], [x_eq u_eq]));
+lin_b_eq = double(subs(jacob_b, [x control], [x_eq u_eq]));
 c = eye(length(x), length(x));
 
-%% Calculate LQR
-sys = ss(lin_a_eq, lin_b_eq, c, zeros(length(x),length(u)));
-%weight matrix for states
-Q  = eye(7);
-R = eye(length(u));
+%% Checking controllability
 
-[lqr_K, S, e] = lqr(sys, Q, R, zeros(length(x),length(u)));
+K_a = rref(ctrb(lin_a_eq, lin_b_eq));
+
+%% Calculate LQR
+sys = ss(lin_a_eq, lin_b_eq, c, zeros(length(x),length(control)));
+%weight matrix for states
+Q  = eye(length(x));
+R = eye(length(control));
+
+[lqr_K, S, e] = lqr(sys, Q, R, zeros(length(x),length(control)));
 
 %% Set Points
-hover_height = 5; %meters
+hover_height = 1; %meters
 set_points = [1 0 hover_height 0 0 0 0 0 0 0 0 0]';
