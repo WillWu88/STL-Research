@@ -62,7 +62,7 @@ motor_mix_vector = [1 -1 1 -1];
 
 % Linearization to find A, B matrix
 
-h = 2; % elevation, arbitrary
+h = -2; % elevation, arbitrary
 
 syms pn pe pd u v w q1 q2 q3 p q r T A E R
 
@@ -89,7 +89,7 @@ quatdcm(3,:) = [2*(q1*q3 + q0*q2), 2*(q2*q3-q0*q1), 1-2*q1^2-2*q2^2];
 p_dot = quatdcm * [u v w]';
 
 grav = [0 0 m*g]';
-v_dot = 1/m * ([0 0 -T]' ...
+v_dot = 1/m * ([0 0 T]' ...
             - T * [k_c*u k_c*v 0]' ...
             + quatdcm * grav ...
             - cross ([p q r], m*[u v w])');
@@ -133,5 +133,5 @@ R = eye(length(control));
 [lqr_K, S, e] = lqr(sys, Q, R, zeros(length(x),length(control)));
 
 %% Set Points
-hover_height = 1; %meters
+hover_height = -1; %meters
 set_points = [1 0 hover_height 0 0 0 0 0 0 0 0 0]';
