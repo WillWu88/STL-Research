@@ -52,8 +52,39 @@ plot(time_vec, gravity);
 legend('X','Y','Z');
 title('Gravity');
 
+%% Load Sampled States
+sampled_states = out.sampled_states.signals.values;
+time_vec2 = out.sampled_states.time;
+
 %% Examining Control
 
 figure;
-plot(time_vec, control(:,1));
+plot(time_vec2, control(:,1));
 title('Thrust Control');
+
+%% Examining Sampled States
+
+figure;
+sgtitle('States vs Samples in 4 Categories');
+subplot(2,2,1);
+plot(time_vec2, sampled_states(:,1:3));
+subplot(221, 'NextPlot', 'add');
+hold on;
+plot(time_vec, states(:,1:3), ':');
+legend('X','Y','Z');
+title('Global Position');
+subplot(2,2,2);
+plot(time_vec2, sampled_states(:,4:6));
+plot(time_vec, states(:,4:6));
+legend('U','V','W');
+title('Body Velocity');
+subplot(2,2,3);
+plot(time_vec2, sampled_states(:,7:9));
+plot(time_vec, states(:,7:9));
+legend('Q_1','Q_2','Q_3');
+title('Rotation');
+subplot(2,2,4);
+plot(time_vec2, sampled_states(:,10:12));
+plot(time_vec, states(:,7:9));
+legend('q','p','r');
+title('Rotational Rate');

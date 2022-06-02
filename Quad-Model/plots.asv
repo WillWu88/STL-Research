@@ -1,5 +1,6 @@
 %% Simulation Plotting Script
 % by Will Wu
+close all;
 %% Import Simulation Results
 
 time_vec = out.tout;
@@ -32,17 +33,29 @@ legend('q','p','r');
 title('Rotational Rate');
 
 %% Examining Net Force
-thrust_force = net_force(:,1:3);
+thrust = net_force(:,1:3);
 drag = net_force(:,4:6);
 gravity = net_force(:,7:9);
 
 figure;
 sgtitle('Net Forces');
-subplot(1,3,1);
+subplot(3,1,1);
 plot(time_vec, thrust);
 legend('X','Y','Z');
 title('Thrust');
-subplot(1,3,1);
+subplot(3,1,2);
 plot(time_vec, drag);
 legend('X','Y','Z');
-title('D');
+title('Drag');
+subplot(3,1,3);
+plot(time_vec, gravity);
+legend('X','Y','Z');
+title('Gravity');
+
+%% Examining Control
+
+figure;
+plot(time_vec, control(:,1));
+title('Thrust Control');
+
+%% Exa
