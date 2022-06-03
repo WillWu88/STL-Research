@@ -1,6 +1,6 @@
 %% Simulink init script
 % By Will Wu
-clc, close all, clear
+clc, % close all, % clear
 
 %% Constant Declaration: from iris.sdf, gazebo simulation
 % using SI units, but marking after data for clarity
@@ -100,14 +100,15 @@ sq13 = [0 -q3 -q2;
         q3 0 -q1;
         -q2 q1 0];
 q0I = q0* eye(3);
-
 rot_dot = 1/2 * (sq13 + q0I) * omega;
+
+% rot_dot = 1/2 * [0 -p -q -r;p 0 r -q; q -r 0 p;r q -p 0]*rot;
 
 omega_dot = J\([A E R]' - cross(omega, J*omega));
 
 dx = [p_dot;v_dot;rot_dot;omega_dot];
 % eqilibrium points
-x_eq = [0 0 h 0 0 0 0 0 0 0 0 0]; % quaternion eq condition
+x_eq = [0 0 h 0 0 0 0 0 0.7071 0 0 0]; % quaternion eq condition
 u_eq = [-m*g 0 0 0];
 
 %% Linerization
@@ -127,7 +128,7 @@ K_a = rref(ctrb(lin_a_eq, lin_b_eq));
 %% Calculate LQR
 sys = ss(lin_a_eq, lin_b_eq, c, zeros(length(x),length(control)));
 %weight matrix for states
-Q  = eye(length(x));
+Q  = diag([2 2 2 10 10 10 1 1 1 20 20 20]);
 R = eye(length(control));
 
 [lqr_K, S, e] = lqr(sys, Q, R, zeros(length(x),length(control)));
@@ -136,4 +137,5 @@ R = eye(length(control));
 
 %% Set Points
 hover_height = -1; %meters
-set_points = [1 0 hover_height 0 0 0 0 0 0 0 0 0]';
+set_points = [1 0 hover_height 0 0 0 0 0 0.7071 0 0 0]';
+pid_lqr_switch = 1; % 1 for lqr, 0 for pid

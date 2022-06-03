@@ -32,6 +32,26 @@ plot(time_vec, error(:,10:12));
 legend('q','p','r');
 title('Rotational Rate');
 
+%% States
+
+figure;
+sgtitle('States in 4 Categories');
+subplot(2,2,1);
+plot(time_vec, states(:,1:3));
+legend('X','Y','Z');
+title('Global Position');
+subplot(2,2,2);
+plot(time_vec, states(:,4:6));
+legend('U','V','W');
+title('Body Velocity');
+subplot(2,2,3);
+plot(time_vec, states(:,7:9));
+legend('Q_1','Q_2','Q_3');
+title('Rotation');
+subplot(2,2,4);
+plot(time_vec, states(:,10:12));
+legend('q','p','r');
+title('Rotational Rate');
 %% Examining Net Force
 thrust = net_force(:,1:3);
 drag = net_force(:,4:6);
@@ -59,8 +79,9 @@ time_vec2 = out.sampled_states.time;
 %% Examining Control
 
 figure;
-plot(time_vec2, control(:,1));
-title('Thrust Control');
+plot(time_vec, control);
+legend('T','A','E','R');
+title('Control Signals');
 
 %% Examining Sampled States
 
@@ -88,3 +109,12 @@ plot(time_vec2, sampled_states(:,10:12));
 plot(time_vec, states(:,7:9));
 legend('q','p','r');
 title('Rotational Rate');
+
+restoreQuat(states(1,7:9));
+
+%% Function Definition
+function full_quat = restoreQuat(quat)
+    q0 = sqrt(1-norm(quat)^2);
+    full_quat(1) = q0;
+    full_quat(2:4) = quat;
+end

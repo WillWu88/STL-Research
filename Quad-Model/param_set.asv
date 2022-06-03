@@ -1,6 +1,6 @@
 %% Simulink init script
 % By Will Wu
-clc, close all, clear
+clc, % close all, % clear
 
 %% Constant Declaration: from iris.sdf, gazebo simulation
 % using SI units, but marking after data for clarity
@@ -64,14 +64,14 @@ motor_mix_vector = [1 -1 1 -1];
 
 h = -2; % elevation, arbitrary
 
-syms pn pe pd u v w q1 q2 q3 p q r T A E R
+syms pn pe pd u v w q0 q1 q2 q3 p q r T A E R
 
 % reduced system, q0 is obtained thru unit quaternion
 
-x = [pn pe pd u v w q1 q2 q3 p q r];
+x = [pn pe pd u v w q0 q1 q2 q3 p q r];
 
-rot = x(7:9)';
-omega = x(10:12)';
+rot = x(7:10)';
+omega = x(11:13)';
 
 control = [T A E R];
 
@@ -80,7 +80,7 @@ control = [T A E R];
 % eth technical report
 % 4481 Homework Journal
 
-q0 = sqrt(1-rot'*rot);
+% q0 = sqrt(1-rot'*rot);
 
 quatdcm(1,:) = [1-2*q2^2-2*q3^2, 2*(q1*q2 + q0*q3), 2*(q1*q3 - q0*q2)];
 quatdcm(2,:) = [2*(q1*q2-q0*q3), 1-2*q1^2-q3^2, 2*(q2*q3+q0*q1)];
@@ -96,12 +96,13 @@ v_dot = 1/m * ([0 0 T]' ...
 
 
 % skew-matrix of q1 thru q3
-sq13 = [0 -q3 -q2;
-        q3 0 -q1;
-        -q2 q1 0];
-q0I = q0* eye(3);
+% sq13 = [0 -q3 -q2;
+%         q3 0 -q1;
+%         -q2 q1 0];
+% q0I = q0* eye(3);
+% rot_dot = 1/2 * (sq13 + q0I) * omega;
 
-rot_dot = 1/2 * (sq13 + q0I) * omega;
+rot_dot = 1/2 * [0 -p -q -r;p 0 r -q; q -r 0 p;r q -p 0]*
 
 omega_dot = J\([A E R]' - cross(omega, J*omega));
 
@@ -136,4 +137,5 @@ R = eye(length(control));
 
 %% Set Points
 hover_height = -1; %meters
-set_points = [1 0 hover_height 0 0 0 0 0 0 0 0 0]';
+set_points = [1 0 hover_height 0 0 0.7071 0 0 0 0 0 0]';
+pid_lqr_switch = 1; % 1 for lqr, 0 for pid
