@@ -108,7 +108,7 @@ omega_dot = J\([A E R]' - cross(omega, J*omega));
 
 dx = [p_dot;v_dot;rot_dot;omega_dot];
 % eqilibrium points
-x_eq = [0 0 h 0 0 0 0 0 0.7071 0 0 0]; % quaternion eq condition
+x_eq = [0 0 h 0 0 0 0 0 0 0 0 0]; % quaternion eq condition
 u_eq = [-m*g 0 0 0];
 
 %% Linerization
@@ -128,7 +128,7 @@ K_a = rref(ctrb(lin_a_eq, lin_b_eq));
 %% Calculate LQR
 sys = ss(lin_a_eq, lin_b_eq, c, zeros(length(x),length(control)));
 %weight matrix for states
-Q  = diag([2 2 2 10 10 10 1 1 1 20 20 20]);
+Q  = diag([10 10 10 10 10 10 1 1 1 20 20 20]);
 R = eye(length(control));
 
 [lqr_K, S, e] = lqr(sys, Q, R, zeros(length(x),length(control)));
@@ -139,3 +139,6 @@ R = eye(length(control));
 hover_height = -1; %meters
 set_points = [1 0 hover_height 0 0 0 0 0 0.7071 0 0 0]';
 pid_lqr_switch = 1; % 1 for lqr, 0 for pid
+
+%% PID Gains
+

@@ -79,9 +79,20 @@ time_vec2 = out.sampled_states.time;
 %% Examining Control
 
 figure;
-plot(time_vec, control);
-legend('T','A','E','R');
-title('Control Signals');
+sgtitle('Control Signals');
+subplot(2,2,1);
+plot(time_vec, control(:,1));
+title('Thrust');
+subplot(2,2,2);
+plot(time_vec, control(:,2));
+title('Aileron');
+subplot(2,2,3);
+plot(time_vec, control(:,3));
+title('Elevator');
+subplot(2,2,4);
+plot(time_vec, control(:,4));
+title('Rudder');
+
 
 %% Examining Sampled States
 
